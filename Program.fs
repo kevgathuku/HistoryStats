@@ -10,11 +10,22 @@ let parseHistoryLine (line: string) =
     else
         ""
 
-
-let readFileLines filePath =
-    File.ReadLines(filePath) // Reads the lines in the file
+let commandsByFrequency count historyFile =
+    // Reads the lines in the file
+    File.ReadLines(historyFile)
+    // Filter out blank line
     |> Seq.filter (fun line -> (String.length line) > 0)
-    |> Seq.iter (fun line -> printfn "%s" (parseHistoryLine line)) // Process each line
+    // Extract the command from the line
+    |> Seq.map (fun line -> (parseHistoryLine line))
+    // Group by command
+    |> Seq.groupBy id
+    // Count occurrences
+    |> Seq.map (fun (command, group) -> (command, Seq.length group))
+    // Sort by the count in descending order
+    |> Seq.sortByDescending snd
+    // Take the top `count` elements
+    |> Seq.take count
+
 
 [<EntryPoint>]
 let main argv =
@@ -26,8 +37,11 @@ let main argv =
     // If there are specific arguments, print them
     match args with
     | [| _app; firstArg |] ->
-        printfn "First argument: %s" firstArg
-        readFileLines firstArg
+        printfn "History file: %s" firstArg
+        let result = commandsByFrequency 5 firstArg
+
+        for (cmd, count) in result do
+            printfn "Command: %s \tCount: %d" cmd count
 
     | _ -> printfn "Usage: dotnet run <firstArg>"
 
