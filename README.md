@@ -7,7 +7,7 @@ commands from the terminal history file.
 
 To run the app:
 
-- Install [.NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+- Install [.NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 - Clone the repository
 - Run the app
 
