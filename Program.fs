@@ -1,14 +1,19 @@
 ﻿open System
 open System.IO
 
+// History entry format
+// : 1759430375:0;which dotnet
 let parseHistoryLine (line: string) =
     if line.StartsWith(":") then
-        let semiColonIndex = line.IndexOf(';')
-        // 1. Get the command i.e. everything after the semicolon
-        let fullCommand = line.Substring(semiColonIndex + 1)
-        // 2. Split by space to get the first part of the command
-        let command = fullCommand.Split([| ' ' |]) |> Array.head
-        Some command
+        match line.IndexOf ';' with
+        | -1 -> None
+        | i ->
+            // 1. Get the command i.e. everything after the semicolon
+            line.Substring(i + 1)
+            // 2. Split by space to get the first part of the command
+            |> fun fullCommand -> fullCommand.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries)
+            // Returns option directly
+            |> Array.tryHead
     else
         None
 
