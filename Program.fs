@@ -4,7 +4,7 @@ open System.IO
 // History entry format
 // : 1759430375:0;which dotnet
 let parseHistoryLine (line: string) =
-    if line.StartsWith(":") then
+    if line.StartsWith ":" then
         match line.IndexOf ';' with
         | -1 -> None
         | i ->
@@ -21,13 +21,13 @@ let commandsByFrequency count historyFile =
     // Returns an enumerable over the lines in the file
     File.ReadLines(historyFile)
     // Take only the non-blank lines
-    |> Seq.choose (fun line -> if String.IsNullOrWhiteSpace line then None else Some line)
+    |> Seq.filter (String.IsNullOrWhiteSpace >> not)
     // Extract the command from the line
-    |> Seq.choose (fun line -> (parseHistoryLine line))
+    |> Seq.choose (fun line -> parseHistoryLine line)
     // Group by command -> (command, seq of commands)
     |> Seq.groupBy id
     // Count occurrences
-    |> Seq.map (fun (command, occurrences) -> (command, Seq.length occurrences))
+    |> Seq.map (fun (command, occurrences) -> command, Seq.length occurrences)
     // Sort by the count in descending order
     |> Seq.sortByDescending snd
     // Take the top `count` elements
